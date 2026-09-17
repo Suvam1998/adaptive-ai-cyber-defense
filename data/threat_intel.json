@@ -1,0 +1,15 @@
+{
+  "_note": "LOCAL SAMPLE threat-intelligence data for demonstration only. Not real-world reputation. External CTI (VirusTotal/AbuseIPDB/OTX/MISP) is not configured.",
+  "indicators": [
+    {"indicator": "203.0.113.66", "indicator_type": "ip", "reputation": "malicious", "score": 92, "source": "sample-otx", "tags": "bruteforce,ssh-scanner"},
+    {"indicator": "203.0.113.77", "indicator_type": "ip", "reputation": "malicious", "score": 88, "source": "sample-otx", "tags": "scanner,botnet"},
+    {"indicator": "198.51.100.23", "indicator_type": "ip", "reputation": "suspicious", "score": 61, "source": "sample-abuseipdb", "tags": "tor-exit"},
+    {"indicator": "198.51.100.199", "indicator_type": "ip", "reputation": "malicious", "score": 95, "source": "sample-misp", "tags": "c2,exfil"},
+    {"indicator": "45.155.205.233", "indicator_type": "ip", "reputation": "malicious", "score": 90, "source": "sample-otx", "tags": "bruteforce,rdp"},
+    {"indicator": "10.0.0.0/8", "indicator_type": "ip", "reputation": "clean", "score": 5, "source": "internal", "tags": "rfc1918-internal"},
+    {"indicator": "evil-c2.example", "indicator_type": "domain", "reputation": "malicious", "score": 94, "source": "sample-misp", "tags": "c2"},
+    {"indicator": "phish-login.example", "indicator_type": "domain", "reputation": "malicious", "score": 89, "source": "sample-otx", "tags": "phishing"},
+    {"indicator": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "indicator_type": "hash", "reputation": "malicious", "score": 97, "source": "sample-vt", "tags": "trojan"},
+    {"indicator": "44d88612fea8a8f36de82e1278abb02f", "indicator_type": "hash", "reputation": "malicious", "score": 96, "source": "sample-vt", "tags": "eicar-test"}
+  ]
+}

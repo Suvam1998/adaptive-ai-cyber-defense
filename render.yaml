@@ -1,0 +1,28 @@
+# Render.com deployment blueprint for the Adaptive AI Cyber Defense System.
+# The app is a FastAPI backend that also serves the build-free frontend, so a
+# single web service is sufficient.
+services:
+  - type: web
+    name: ai-soc
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    # Render injects $PORT; bind 0.0.0.0. uvicorn is started directly so the
+    # platform port is used exactly (no free-port scan).
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: RESPONSE_SIMULATION
+        value: "true"
+      - key: AUTO_RESPONSE
+        value: "false"
+      - key: AUTONOMY_LEVEL_CAP
+        value: "3"
+      - key: EXTERNAL_TI_ENABLED
+        value: "false"
+      # NOTE: SQLite on Render's free tier is EPHEMERAL (reset on redeploy).
+      # For persistent storage attach a disk or migrate to Postgres later.
+      - key: DATABASE_PATH
+        value: data/soc.db

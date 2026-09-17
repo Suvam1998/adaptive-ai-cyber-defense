@@ -1,0 +1,139 @@
+"""Incident report + export builders (Markdown / JSON / CSV)."""
+from __future__ import annotations
+
+import csv
+import io
+
+from . import audit
+from . import database as db
+from .agents import orchestrator
+
+
+def incident_bundle(incident_id: str) -> dict | None:
+    inc = db.query_one("SELECT * FROM incidents WHERE incident_id=?", (incident_id,))
+    if not inc:
+        return None
+    analysis = orchestrator.get_analysis(incident_id) or {}
+    timeline = []
+    ctx = orchestrator.build_context(incident_id)
+    if ctx:
+        from .agents.investigation_agent import build_timeline
+        timeline = build_timeline(ctx.events)
+    responses = db.query(
+        "SELECT * FROM responses WHERE incident_id=? ORDER BY created_at", (incident_id,))
+    outcomes = db.query(
+        "SELECT * FROM response_outcomes WHERE incident_id=? ORDER BY created_at",
+        (incident_id,))
+    return {
+        "incident": inc,
+        "analysis": analysis,
+        "timeline": timeline,
+        "responses": responses,
+        "outcomes": outcomes,
+        "audit": audit.for_incident(incident_id),
+    }
+
+
+def markdown_report(incident_id: str) -> str | None:
+    b = incident_bundle(incident_id)
+    if not b:
+        return None
+    inc = b["incident"]
+    a = b["analysis"]
+    risk = a.get("risk", {})
+    cons = a.get("consensus", {})
+    lines = []
+    w = lines.append
+    w(f"# Incident Report — {inc['incident_id']}")
+    w("")
+    w(f"> Dataset: **{inc['dataset'].upper()}**"
+      + ("  _(synthetic DEMO data — not real)_" if inc["dataset"] == "demo" else ""))
+    w("")
+    w("## Executive Summary")
+    w(f"- Attack type: **{inc['attack_type']}**")
+    w(f"- Severity: **{inc['severity']}**  |  Risk: **{round((inc['risk_score'] or 0)*100)}/100**"
+      f"  |  Confidence: **{round((inc['confidence'] or 0)*100)}%**")
+    w(f"- Status: **{inc['status']}** ({inc['stage']})")
+    w(f"- Recommended action: **{inc['recommended_action']}**")
+    w(f"- Autonomy decision: {inc['autonomy_decision']}")
+    w("")
+    w("## Incident Details")
+    w(f"- Created: {inc['created_at']}  |  Updated: {inc['updated_at']}")
+    w(f"- Source IPs: {db.jload(inc['source_ips'], [])}")
+    w(f"- Affected hosts: {db.jload(inc['affected_hosts'], [])}")
+    w(f"- Affected users: {db.jload(inc['affected_users'], [])}")
+    w(f"- Detection reason: {inc['detection_reason']}")
+    w("")
+    w("## Evidence / Attack Timeline")
+    for t in b["timeline"]:
+        w(f"- `{t['timestamp']}` {t['label']} "
+          f"(user={t.get('user')}, host={t.get('host')}, src={t.get('source_ip')})")
+    w("")
+    w("## Risk Assessment")
+    if risk.get("breakdown"):
+        for k, v in risk["breakdown"].items():
+            w(f"- {k.replace('_', ' ').title()}: {v['score']}/{v['max']} — {v['note']}")
+        w(f"- **Total: {risk.get('total')}/100**")
+    w("")
+    w("## Agent Assessments")
+    for ag in a.get("agents", []):
+        w(f"- **{ag['agent']}** — {ag['verdict']} (conf {ag['confidence']})")
+        w(f"  - {ag['rationale']}")
+    w(f"\n- **Consensus:** {round(cons.get('score', 0)*100)}% "
+      f"(agreement {round(cons.get('agreement', 0)*100)}%)")
+    w("")
+    w("## MITRE ATT&CK")
+    for t in db.jload(inc["mitre"], []) or []:
+        w(f"- {t['id']} {t['name']} — {t.get('tactic', '')} (conf {t.get('confidence')})")
+    w("")
+    w("## Response & Validation")
+    for r in b["responses"]:
+        w(f"- {r['action']} → {r['target']} [{r['status']}] "
+          f"(risk {r['response_risk']}, rollback: {r['rollback']})")
+    for o in b["outcomes"]:
+        w(f"- Outcome: **{o['outcome']}** (indicators {o['indicators_before']} → "
+          f"{o['indicators_after']}, effectiveness {o['effectiveness']})")
+    w("")
+    w("## Recommendations")
+    if a.get("memory", {}).get("recommendation"):
+        rec = a["memory"]["recommendation"]
+        w(f"- Historical: '{rec['strategy']}' effective "
+          f"{int(rec['effectiveness']*100)}% previously.")
+    w(f"- Current recommended action: {inc['recommended_action']}")
+    w("")
+    w("## Lessons Learned")
+    if b["outcomes"]:
+        o = b["outcomes"][-1]
+        if o["outcome"] == "SUCCESS":
+            w(f"- The response '{b['responses'][-1]['action'] if b['responses'] else 'n/a'}' "
+              f"verified successful (indicators {o['indicators_before']} → "
+              f"{o['indicators_after']}); this strategy's confidence was "
+              f"increased for similar future incidents.")
+        else:
+            w(f"- Verification returned **{o['outcome']}** — the threat may persist; "
+              f"strategy confidence was reduced and follow-up is recommended.")
+    else:
+        w("- No response has been verified yet; no learning update recorded.")
+    if a.get("consensus", {}).get("disagreement"):
+        w("- Agents disagreed on this incident — autonomy was reduced and human "
+          "review prioritised.")
+    w("")
+    w("---")
+    w("_Generated by the Adaptive AI Cyber Defense System (AI-assisted prototype)._")
+    return "\n".join(lines)
+
+
+def incidents_csv(dataset: str) -> str:
+    rows = db.query(
+        "SELECT incident_id, created_at, attack_type, severity, risk_score, "
+        "confidence, status, recommended_action FROM incidents WHERE dataset=? "
+        "ORDER BY created_at DESC", (dataset,))
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["incident_id", "created_at", "attack_type", "severity",
+                     "risk_score", "confidence", "status", "recommended_action"])
+    for r in rows:
+        writer.writerow([r["incident_id"], r["created_at"], r["attack_type"],
+                         r["severity"], r["risk_score"], r["confidence"],
+                         r["status"], r["recommended_action"]])
+    return buf.getvalue()

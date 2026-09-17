@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adaptive AI Cyber Defense System</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <!-- Full-screen SOC startup / initialization screen (controlled by app.js) -->
+  <div id="bootScreen" role="dialog" aria-modal="true" aria-label="System initialization" aria-busy="true">
+    <div class="boot-inner">
+      <div class="boot-head">
+        <div class="boot-logo" aria-hidden="true">🛡️</div>
+        <h1 class="boot-title">AI CYBER DEFENSE</h1>
+        <div class="boot-sub">SECURITY OPERATIONS CENTER</div>
+        <div class="boot-tag" id="bootTag">Initializing Cyber Defense Platform</div>
+      </div>
+
+      <div class="boot-progress">
+        <div class="boot-msg" id="bootMsg">Loading security configuration</div>
+        <div class="boot-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bootBar">
+          <div class="boot-bar-fill" id="bootBarFill"></div>
+        </div>
+        <div class="boot-pct" id="bootPct">0%</div>
+      </div>
+
+      <div class="boot-grid">
+        <div class="boot-col">
+          <div class="boot-col-title">SYSTEM INITIALIZATION</div>
+          <ul class="boot-stages" id="bootStages"></ul>
+        </div>
+        <div class="boot-col">
+          <div class="boot-col-title">SOC SERVICES</div>
+          <div class="boot-agents" id="bootAgents"></div>
+        </div>
+      </div>
+
+      <div class="boot-conn">
+        <span class="boot-conn-label">REAL-TIME EVENT STREAM</span>
+        <span id="bootConn" class="boot-conn-state connecting"><span class="dot"></span>CONNECTING</span>
+      </div>
+
+      <div class="boot-log-wrap">
+        <div class="boot-col-title">SYSTEM LOG</div>
+        <div class="boot-log" id="bootLog" aria-live="polite"></div>
+      </div>
+
+      <div class="boot-status" id="bootStatus" aria-live="polite">SYSTEM STATUS: <b>INITIALIZING</b></div>
+      <div class="boot-final" id="bootFinal"></div>
+    </div>
+  </div>
+
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">🛡️</span>
+        <div>
+          <div class="brand-title">Adaptive AI Cyber Defense</div>
+          <div class="brand-sub">AI-assisted SOC · research/industry prototype</div>
+        </div>
+      </div>
+      <div class="topbar-mid">
+        <input id="globalSearch" class="search" type="text"
+               placeholder="Search incident / IP / user / host / technique…" />
+        <div id="searchResults" class="search-results hidden"></div>
+      </div>
+      <div class="topbar-right">
+        <div class="dataset-toggle" id="datasetToggle">
+          <button data-ds="real" class="active">Real Data</button>
+          <button data-ds="demo">Demo Data</button>
+        </div>
+        <div class="safety-badges">
+          <span id="badgeSim" class="badge badge-ok">SIMULATION</span>
+          <span id="badgeAuto" class="badge badge-warn">AUTO-RESP OFF</span>
+        </div>
+        <div class="sysstat" id="sysStat" title="System status" aria-live="polite"><span class="dot"></span>SYSTEM ONLINE</div>
+        <div class="live" id="liveDot" title="Real-time event stream"><span class="dot"></span><span id="liveText">LIVE</span></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <nav class="sidebar">
+        <a href="#/dashboard" data-route="dashboard">📊 Dashboard</a>
+        <a href="#/incidents" data-route="incidents">🚨 Incident Center</a>
+        <a href="#/responses" data-route="responses">🛠️ Response Center</a>
+        <a href="#/assessment" data-route="assessment">🛡️ Security Assessment</a>
+        <a href="#/realdata" data-route="realdata">📥 Real Data</a>
+        <a href="#/demo" data-route="demo">🎬 Demo Mode</a>
+        <a href="#/analytics" data-route="analytics">📈 Analytics</a>
+        <a href="#/evaluation" data-route="evaluation">🧪 Evaluation</a>
+        <a href="#/memory" data-route="memory">🧠 Incident Memory</a>
+        <a href="#/audit" data-route="audit">📜 Audit Log</a>
+        <div class="sidebar-foot">
+          <div id="dsIndicator" class="ds-indicator">Dataset: <b>REAL</b></div>
+          <div class="demo-banner hidden" id="demoBanner">DEMO DATA — synthetic</div>
+        </div>
+      </nav>
+
+      <main id="view" class="view"><div class="loading">Loading…</div></main>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+  <div id="modal" class="modal hidden"><div class="modal-card" id="modalCard"></div></div>
+
+  <!-- Chart.js (optional; UI degrades gracefully if the CDN is unreachable) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

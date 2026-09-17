@@ -1,0 +1,28 @@
+# Database + runtime artifacts
+data/soc.db
+data/soc.db-wal
+data/soc.db-shm
+data/server.log
+data/_incs.txt
+data/_rid.txt
+
+# Environment
+.env
+
+# Real datasets are large and must not be committed (keep the README)
+data/datasets/*.csv
+data/datasets/*.json
+data/datasets/*.zip
+!data/datasets/README.md
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

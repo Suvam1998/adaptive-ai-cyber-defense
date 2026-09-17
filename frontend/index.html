@@ -3,46 +3,76 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Adaptive AI Cyber Defense System</title>
+  <title>Anarisk — SaaS AI Cyber Security Operations Center</title>
+  <meta name="description" content="Anarisk Adaptive AI Cyber Defense Platform - Next-Gen Threat Detection, Multi-Agent SOC Investigation, and Automated Response." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
-  <!-- Full-screen SOC startup / initialization screen (controlled by app.js) -->
+  <!-- Full-screen SOC startup / initialization screen -->
   <div id="bootScreen" role="dialog" aria-modal="true" aria-label="System initialization" aria-busy="true">
+    <div class="boot-backdrop-grid"></div>
     <div class="boot-inner">
       <div class="boot-head">
-        <div class="boot-logo" aria-hidden="true">🛡️</div>
-        <h1 class="boot-title">AI CYBER DEFENSE</h1>
-        <div class="boot-sub">SECURITY OPERATIONS CENTER</div>
-        <div class="boot-tag" id="bootTag">Initializing Cyber Defense Platform</div>
+        <div class="boot-logo-wrap">
+          <div class="boot-logo-glow"></div>
+          <div class="boot-logo-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M12 8v4"/>
+              <path d="M12 16h.01"/>
+            </svg>
+          </div>
+        </div>
+        <div class="boot-brand-group">
+          <div class="boot-badge-tag">ANARISK NEXT-GEN SOC</div>
+          <h1 class="boot-title">ADAPTIVE AI CYBER DEFENSE</h1>
+          <div class="boot-sub">INTELLIGENT THREAT DETECTION · MULTI-AGENT INVESTIGATION · AUTONOMOUS RESPONSE</div>
+        </div>
       </div>
 
-      <div class="boot-progress">
-        <div class="boot-msg" id="bootMsg">Loading security configuration</div>
+      <div class="boot-progress-card">
+        <div class="boot-progress-header">
+          <span class="boot-msg" id="bootMsg">Initializing core security modules…</span>
+          <span class="boot-pct" id="bootPct">0%</span>
+        </div>
         <div class="boot-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bootBar">
           <div class="boot-bar-fill" id="bootBarFill"></div>
         </div>
-        <div class="boot-pct" id="bootPct">0%</div>
       </div>
 
       <div class="boot-grid">
         <div class="boot-col">
-          <div class="boot-col-title">SYSTEM INITIALIZATION</div>
+          <div class="boot-col-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            INITIALIZATION PIPELINE
+          </div>
           <ul class="boot-stages" id="bootStages"></ul>
         </div>
         <div class="boot-col">
-          <div class="boot-col-title">SOC SERVICES</div>
+          <div class="boot-col-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            SOC AGENTS & ENGINES
+          </div>
           <div class="boot-agents" id="bootAgents"></div>
         </div>
       </div>
 
-      <div class="boot-conn">
-        <span class="boot-conn-label">REAL-TIME EVENT STREAM</span>
+      <div class="boot-conn-card">
+        <div class="boot-conn-left">
+          <span class="pulse-beacon"></span>
+          <span>TELEMETRY STREAM: <b>SERVER-SENT EVENTS (SSE)</b></span>
+        </div>
         <span id="bootConn" class="boot-conn-state connecting"><span class="dot"></span>CONNECTING</span>
       </div>
 
       <div class="boot-log-wrap">
-        <div class="boot-col-title">SYSTEM LOG</div>
+        <div class="boot-col-title">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+          SOC INITIALIZATION TELEMETRY
+        </div>
         <div class="boot-log" id="bootLog" aria-live="polite"></div>
       </div>
 
@@ -51,61 +81,197 @@
     </div>
   </div>
 
+  <!-- Main Application Container -->
   <div id="app">
+    <!-- Top Navigation Bar -->
     <header class="topbar">
-      <div class="brand">
-        <span class="logo">🛡️</span>
-        <div>
-          <div class="brand-title">Adaptive AI Cyber Defense</div>
-          <div class="brand-sub">AI-assisted SOC · research/industry prototype</div>
+      <div class="topbar-left">
+        <div class="brand">
+          <div class="brand-logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M12 8v4"/>
+              <path d="M12 16h.01"/>
+            </svg>
+          </div>
+          <div class="brand-meta">
+            <div class="brand-title">ANARISK <span class="brand-title-sub">SOC</span></div>
+            <div class="brand-sub">Adaptive AI Defense Platform</div>
+          </div>
         </div>
       </div>
+
       <div class="topbar-mid">
-        <input id="globalSearch" class="search" type="text"
-               placeholder="Search incident / IP / user / host / technique…" />
-        <div id="searchResults" class="search-results hidden"></div>
+        <div class="search-wrap">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input id="globalSearch" class="search" type="text"
+                 placeholder="Search threats, IPs, hosts, MITRE ATT&CK techniques, users…" />
+          <div class="search-shortcut"><kbd>Ctrl</kbd><kbd>K</kbd></div>
+          <div id="searchResults" class="search-results hidden"></div>
+        </div>
       </div>
+
       <div class="topbar-right">
+        <!-- Dataset Selector Switcher -->
         <div class="dataset-toggle" id="datasetToggle">
-          <button data-ds="real" class="active">Real Data</button>
-          <button data-ds="demo">Demo Data</button>
+          <button data-ds="real" class="active">
+            <span class="toggle-dot"></span>Real Dataset
+          </button>
+          <button data-ds="demo">
+            <span class="toggle-dot"></span>Demo Mode
+          </button>
         </div>
+
+        <!-- Safety & Autonomy Badges -->
         <div class="safety-badges">
-          <span id="badgeSim" class="badge badge-ok">SIMULATION</span>
-          <span id="badgeAuto" class="badge badge-warn">AUTO-RESP OFF</span>
+          <span id="badgeSim" class="badge badge-sim">
+            <span class="badge-dot"></span>SIMULATION
+          </span>
+          <span id="badgeAuto" class="badge badge-auto">
+            <span class="badge-dot"></span>AUTO-RESP OFF
+          </span>
         </div>
-        <div class="sysstat" id="sysStat" title="System status" aria-live="polite"><span class="dot"></span>SYSTEM ONLINE</div>
-        <div class="live" id="liveDot" title="Real-time event stream"><span class="dot"></span><span id="liveText">LIVE</span></div>
+
+        <!-- Telemetry Status -->
+        <div class="telemetry-group">
+          <div class="sysstat online" id="sysStat" title="System Status" aria-live="polite">
+            <span class="dot"></span>SOC ONLINE
+          </div>
+          <div class="live" id="liveDot" title="Live Telemetry SSE Stream">
+            <span class="dot"></span><span id="liveText">LIVE</span>
+          </div>
+        </div>
+
+        <!-- User / Analyst Profile -->
+        <div class="user-profile-badge" title="Authenticated SOC Operator">
+          <div class="user-avatar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div class="user-info">
+            <span class="user-name">Tier-3 Lead</span>
+            <span class="user-role">SecOps Admin</span>
+          </div>
+        </div>
       </div>
     </header>
 
+    <!-- Main Application Shell -->
     <div class="layout">
-      <nav class="sidebar">
-        <a href="#/dashboard" data-route="dashboard">📊 Dashboard</a>
-        <a href="#/incidents" data-route="incidents">🚨 Incident Center</a>
-        <a href="#/responses" data-route="responses">🛠️ Response Center</a>
-        <a href="#/assessment" data-route="assessment">🛡️ Security Assessment</a>
-        <a href="#/realdata" data-route="realdata">📥 Real Data</a>
-        <a href="#/demo" data-route="demo">🎬 Demo Mode</a>
-        <a href="#/analytics" data-route="analytics">📈 Analytics</a>
-        <a href="#/evaluation" data-route="evaluation">🧪 Evaluation</a>
-        <a href="#/memory" data-route="memory">🧠 Incident Memory</a>
-        <a href="#/audit" data-route="audit">📜 Audit Log</a>
-        <div class="sidebar-foot">
-          <div id="dsIndicator" class="ds-indicator">Dataset: <b>REAL</b></div>
-          <div class="demo-banner hidden" id="demoBanner">DEMO DATA — synthetic</div>
+      <!-- Sidebar Navigation -->
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <div class="sidebar-heading">MAIN OVERVIEW</div>
+          <nav class="sidebar-nav">
+            <a href="#/dashboard" data-route="dashboard" class="active">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              <span>Security Dashboard</span>
+            </a>
+            <a href="#/geospatial" data-route="geospatial">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              <span>Threat Battlemap</span>
+              <span class="nav-counter" style="background: rgba(0, 229, 255, 0.15); color: var(--neon-cyan); border: 1px solid rgba(0, 229, 255, 0.3)">MAP</span>
+            </a>
+            <a href="#/incidents" data-route="incidents">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span>Incident Center</span>
+              <span class="nav-counter" id="navIncCount">--</span>
+            </a>
+            <a href="#/responses" data-route="responses">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              <span>Response Actions</span>
+            </a>
+            <a href="#/assessment" data-route="assessment">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              <span>Posture Assessment</span>
+            </a>
+          </nav>
         </div>
-      </nav>
 
-      <main id="view" class="view"><div class="loading">Loading…</div></main>
+        <div class="sidebar-section">
+          <div class="sidebar-heading">OPERATIONS & DATA</div>
+          <nav class="sidebar-nav">
+            <a href="#/realdata" data-route="realdata">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>Data Ingestion</span>
+            </a>
+            <a href="#/demo" data-route="demo">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>Demo Simulation</span>
+            </a>
+            <a href="#/analytics" data-route="analytics">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+              <span>Analytics & Trends</span>
+            </a>
+            <a href="#/evaluation" data-route="evaluation">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              <span>Model Evaluation</span>
+            </a>
+          </nav>
+        </div>
+
+        <div class="sidebar-section">
+          <div class="sidebar-heading">AI & AUDIT LOGS</div>
+          <nav class="sidebar-nav">
+            <a href="#/memory" data-route="memory">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.54z"></path><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.54z"></path></svg>
+              <span>Incident Memory</span>
+            </a>
+            <a href="#/audit" data-route="audit">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+              <span>Audit Trail</span>
+            </a>
+          </nav>
+        </div>
+
+        <!-- Sidebar Footer Status Card -->
+        <div class="sidebar-foot">
+          <div class="sidebar-status-card">
+            <div class="sidebar-status-top">
+              <div class="status-shield-icon">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div class="status-mode-label" id="dsIndicator">MODE: <b>REAL DATA</b></div>
+            </div>
+            <div class="sidebar-status-meta">
+              <span>9 Multi-Agent SOC Services</span>
+              <span class="status-dot-active">●</span>
+            </div>
+            <div class="demo-banner hidden" id="demoBanner">
+              <span class="warning-icon">⚠️</span> SYNTHETIC DEMO MODE
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Dynamic Content Container -->
+      <main id="view" class="view">
+        <div class="loading-state">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Loading Anarisk SOC Telemetry…</div>
+        </div>
+      </main>
     </div>
   </div>
 
-  <div id="toast" class="toast hidden"></div>
-  <div id="modal" class="modal hidden"><div class="modal-card" id="modalCard"></div></div>
+  <!-- Notification Toast -->
+  <div id="toast" class="toast hidden" role="alert"></div>
 
-  <!-- Chart.js (optional; UI degrades gracefully if the CDN is unreachable) -->
+  <!-- Interactive Modal Container -->
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card" id="modalCard"></div>
+  </div>
+
+  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- D3.js & TopoJSON Geographic Engines -->
+  <script src="/static/d3.min.js"></script>
+  <script src="/static/topojson-client.min.js"></script>
+  <!-- Application Core -->
   <script src="/static/app.js"></script>
 </body>
 </html>

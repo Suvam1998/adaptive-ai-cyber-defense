@@ -195,10 +195,58 @@ def investigate(incident_id: str) -> dict | None:
         return None
     dataset = ctx.dataset
 
-    db.execute("UPDATE incidents SET status='Investigating', stage='Investigation', "
-               "updated_at=? WHERE incident_id=?", (now_iso(), incident_id))
-    audit.log("investigation.started", incident_id=incident_id,
-              actor="SOC Orchestrator", dataset=dataset)
+    # Preserve a successfully contained incident when its investigation
+    # is requested again; do not silently reopen it without new evidence.
+    current = db.query_one(
+        "SELECT status, stage FROM incidents WHERE incident_id=?",
+        (incident_id,),
+    )
+
+    # Stop ordinary investigations from reopening closed incidents
+    # or generating duplicate response plans.
+    if current and current["status"] in ("Contained", "Closed"):
+        audit.log(
+            "investigation.skipped",
+            incident_id=incident_id,
+            actor="SOC Orchestrator",
+            detail=(
+                "Investigation skipped because the incident is already "
+                "contained or closed. No new response plans were generated."
+            ),
+            dataset=dataset,
+        )
+
+        existing_analysis = get_analysis(incident_id)
+        if existing_analysis:
+            return existing_analysis
+
+        return {
+            "incident_id": incident_id,
+            "status": current["status"],
+            "stage": current["stage"],
+            "plans": [],
+            "message": (
+                "Incident is already contained or closed. "
+                "No new investigation or response plans were generated."
+            ),
+        }
+
+    is_contained = False
+    if not is_contained:
+        db.execute(
+            "UPDATE incidents SET status='Investigating', stage='Investigation', "
+            "updated_at=? WHERE incident_id=?",
+            (now_iso(), incident_id),
+        )
+
+    audit.log(
+        "investigation.started",
+        incident_id=incident_id,
+        actor="SOC Orchestrator",
+        detail=("Reassessment requested for contained incident; preserved status."
+                if is_contained else "Investigation started."),
+        dataset=dataset,
+    )
 
     # --- run agents ---
     a_det = detection_agent.assess(ctx)
@@ -296,8 +344,8 @@ def investigate(incident_id: str) -> dict | None:
             "evidence_refs": db.jdump(a["evidence_refs"]), "created_at": now_iso()})
 
     # --- persist responses ---
-    db.execute("DELETE FROM responses WHERE incident_id=? AND status IN "
-               "('planned','validated','awaiting_approval')", (incident_id,))
+    # Preserve response history for auditability. Existing response plans
+    # remain in the database when an investigation is rerun.
     resp_ids = []
     recommended_response_id = None
     now = now_iso()
@@ -334,12 +382,26 @@ def investigate(incident_id: str) -> dict | None:
             recommended_response_id = rid
 
     # --- update incident state ---
-    new_status = ("Awaiting Approval" if auto["requires_approval"]
-                  else "Investigating")
-    if validation["decision"] == "REJECTED":
-        new_status = "Investigating"
-    stage = ("Human Approval" if auto["requires_approval"]
-             else "Response Validation")
+    current = db.query_one(
+        "SELECT status, stage FROM incidents WHERE incident_id=?",
+        (incident_id,),
+    )
+    is_already_contained = bool(
+        current and current["status"] == "Contained"
+    )
+
+    if is_already_contained:
+        # Preserve the verified outcome unless a separate, explicit
+        # follow-up workflow establishes that the threat has returned.
+        new_status = "Contained"
+        stage = "Closed"
+    else:
+        new_status = ("Awaiting Approval" if auto["requires_approval"]
+                      else "Investigating")
+        if validation["decision"] == "REJECTED":
+            new_status = "Investigating"
+        stage = ("Human Approval" if auto["requires_approval"]
+                 else "Response Validation")
     # escalate severity if risk very high
     severity = ctx.severity
     if risk["total"] >= 85 and SEV_RANK.get(severity.lower(), 2) < 4:
@@ -581,15 +643,26 @@ def simulate_response(response_id: str, analyst: str = "analyst") -> dict | None
 
 
 def revalidate_response(response_id: str) -> dict | None:
-    resp = db.query_one("SELECT * FROM responses WHERE response_id=?", (response_id,))
+    resp = db.query_one(
+        "SELECT * FROM responses WHERE response_id=?",
+        (response_id,),
+    )
     if not resp:
         return None
+
     analysis = get_analysis(resp["incident_id"])
-    if analysis:
+    if analysis and analysis.get("validation"):
         return analysis["validation"]
-    # fall back to fresh investigation
-    a = investigate(resp["incident_id"])
-    return a["validation"] if a else None
+
+    # Validation must not silently launch a new investigation.
+    # Return a clear result when no saved analysis is available.
+    return {
+        "decision": "ANALYSIS_UNAVAILABLE",
+        "message": (
+            "No saved investigation analysis is available. "
+            "Run an explicit investigation before validating this response."
+        ),
+    }
 
 
 def _dataset_of(incident_id: str) -> str:

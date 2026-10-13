@@ -215,11 +215,6 @@ def investigate(incident_id: str) -> dict | None:
             ),
             dataset=dataset,
         )
-
-        existing_analysis = get_analysis(incident_id)
-        if existing_analysis:
-            return existing_analysis
-
         return {
             "incident_id": incident_id,
             "status": current["status"],
